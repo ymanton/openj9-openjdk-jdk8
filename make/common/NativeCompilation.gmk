@@ -120,7 +120,11 @@ define add_native_source
 	      -e 's|^\([a-zA-Z]\):|/cygdrive/\1|g' \
 	      -e '/$(subst /,\/,$(TOPDIR))/!d' \
 	      -e 's|$$$$| \\|g' \
-	      $$($1_$2_DEP).raw) > $$($1_$2_DEP)
+	      $$($1_$2_DEP).raw \
+	    # Input contains CRLF line endings and the last `sed` command above seems
+	    # to leave the CR when it adds the trailing \, which results in a file that
+	    # `make` can't properly read; use `tr` to delete all CRs in the output.
+	  | $(TR) -d '\r') > $$($1_$2_DEP)
         endif
   endif
 endef
